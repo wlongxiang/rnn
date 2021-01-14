@@ -62,7 +62,6 @@ class LSTM(nn.Module):
         # init biases to zeros
         for bias in [self.bg, self.bi, self.bf, self.bo, self.bp]:
             nn.init.zeros_(bias)
-        self.hidden_states = []
 
     def forward(self, x):
         """
