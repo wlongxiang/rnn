@@ -128,6 +128,7 @@ def train(config):
         # note that model_output are raw output before softmaxing
         # adding an extra input size dimension this is needed for pytorch implementation
         model_output, hidden = model.forward(batch_inputs)
+        # flatten out the target output to match model output
         batch_targets = batch_targets.view(-1).long()
         # note: as we only care about the last output, aka the last digit in the pandidrome!
         loss = criterion(model_output, batch_targets)
@@ -155,10 +156,10 @@ def train(config):
                 accuracy, loss
             ))
             print("sampling start with: ", sample(model=model,
-                                       out_len=15, start='hey',
-                                       char2int=dataset.char2int,
-                                       int2char=dataset.int2char,
-                                       dict_size=dataset.dict_size))
+                                                  out_len=15, start='hey',
+                                                  char2int=dataset.char2int,
+                                                  int2char=dataset.int2char,
+                                                  dict_size=dataset.dict_size))
             csv_data = [step, loss, accuracy]
             with open(cvs_file, 'a') as fd:
                 writer = csv.writer(fd)
