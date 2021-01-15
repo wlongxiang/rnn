@@ -104,7 +104,7 @@ def train(config):
                     gru=True)
     else:
         model = RNN(input_size=dataset.dict_size, output_size=dataset.dict_size, hidden_size=12, num_layers=1)
-
+    print(model)
     # Setup the loss and optimizer
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.RMSprop(model.parameters(), config.learning_rate)
@@ -187,7 +187,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     # Model params
-    parser.add_argument('--model_type', type=str, default="GRU", help="Model type, should be 'RNN' or 'LSTM' or 'GRU'")
+    parser.add_argument('--model_type', type=str, default="LSTM", help="Model type, should be 'RNN' or 'LSTM' or 'GRU'")
     parser.add_argument('--input_length', type=int, default=6, help='Length of an input sequence')
     parser.add_argument('--input_dim', type=int, default=1, help='Dimensionality of input sequence')
     parser.add_argument('--num_classes', type=int, default=10, help='Dimensionality of output sequence')

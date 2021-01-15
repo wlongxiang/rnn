@@ -63,10 +63,18 @@ def calc_accuracy(predictions, targets):
 def train(config):
     # Initialize the device which to run the model on
     device = torch.device(config.device)
-    model = RNN(config.input_dim,
-                config.num_classes,
-                config.num_hidden,
-                num_layers=3).to(device)
+    if config.model_type == "LSTM":
+        model = RNN(input_size=config.input_dim, output_size=config.num_classes, hidden_size=config.num_hidden,
+                    num_layers=1,
+                    lstm=True)
+    elif config.model_type == "GRU":
+        model = RNN(input_size=config.input_dim, output_size=config.num_classes, hidden_size=config.num_hidden,
+                    num_layers=1,
+                    gru=True)
+    else:
+        model = RNN(input_size=config.input_dim, output_size=config.num_classes, hidden_size=config.num_hidden,
+                    num_layers=1)
+    print(model)
     # Initialize the dataset and data loader (note the +1) to include the last digit as prediction target
     dataset = PalindromeDataset(config.input_length + 1)
     data_loader = DataLoader(dataset, config.batch_size, num_workers=1)
@@ -148,7 +156,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     # Model params
-    parser.add_argument('--model_type', type=str, default="RNN", help="Model type, should be 'RNN' or 'LSTM'")
+    parser.add_argument('--model_type', type=str, default="GRU", help="Model type, should be 'RNN' or 'LSTM' or 'GRU'")
     parser.add_argument('--input_length', type=int, default=6, help='Length of an input sequence')
     parser.add_argument('--input_dim', type=int, default=1, help='Dimensionality of input sequence')
     parser.add_argument('--num_classes', type=int, default=10, help='Dimensionality of output sequence')
