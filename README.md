@@ -1,6 +1,6 @@
 # rnn
 
-RNN implementations based on Deep Learning Course at UvA.
+RNN (including vanilla RNN, LSTM and GRU) implementations based on Deep Learning Course at UvA.
 
 In `pytorch_rnn.py`, you can find implementations for `RNN`, LSTM` as well as GRU`
 in a consistent manner.
