@@ -28,7 +28,7 @@ from torch import optim, nn
 from torch.utils.data import DataLoader
 
 from dataset import PalindromeDataset
-from lstm import LSTM
+from raw_rnn import VanillaRNN
 
 from sklearn.metrics import accuracy_score
 
@@ -59,10 +59,10 @@ def calc_accuracy(predictions, targets):
 def train(config):
     # Initialize the device which to run the model on
     device = torch.device(config.device)
-    model = LSTM(config.input_dim,
-                 config.num_hidden,
-                 config.num_classes,
-                 config.device).to(device)
+    model = VanillaRNN(config.input_dim,
+                       config.num_hidden,
+                       config.num_classes,
+                       config.device).to(device)
     # Initialize the dataset and data loader (note the +1) to include the last digit as prediction target
     dataset = PalindromeDataset(config.input_length + 1)
     data_loader = DataLoader(dataset, config.batch_size, num_workers=1)
@@ -95,7 +95,7 @@ def train(config):
         batch_inputs = batch_inputs.to(device)
         batch_targets = batch_targets.to(device)
         # note that model_output are raw output before softmaxing
-        hidden_state, model_output = model.forward(batch_inputs)
+        hidden_weight, hidden_state, model_output = model.forward(batch_inputs)
         loss = criterion(model_output, batch_targets)
         loss.backward()
 

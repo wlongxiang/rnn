@@ -1,8 +1,8 @@
 ################################################################################
 # MIT License
-# 
+#
 # Copyright (c) 2019
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -13,6 +13,9 @@
 # Author: Deep Learning Course | Fall 2019
 # Date Created: 2019-09-06
 ################################################################################
+
+# In this implementation, you can also stack multiple layers of RNN!
+# Observation: too many layers make it too hard to learn, problem at hand is too small for deep NN.
 
 from __future__ import absolute_import
 from __future__ import division
@@ -28,7 +31,8 @@ from torch import optim, nn
 from torch.utils.data import DataLoader
 
 from dataset import PalindromeDataset
-from vanilla_rnn import VanillaRNN
+from pytorch_rnn import RNN
+from raw_rnn import VanillaRNN
 
 from sklearn.metrics import accuracy_score
 
@@ -59,10 +63,10 @@ def calc_accuracy(predictions, targets):
 def train(config):
     # Initialize the device which to run the model on
     device = torch.device(config.device)
-    model = VanillaRNN(config.input_dim,
-                       config.num_hidden,
-                       config.num_classes,
-                       config.device).to(device)
+    model = RNN(config.input_dim,
+                config.num_classes,
+                config.num_hidden,
+                num_layers=3).to(device)
     # Initialize the dataset and data loader (note the +1) to include the last digit as prediction target
     dataset = PalindromeDataset(config.input_length + 1)
     data_loader = DataLoader(dataset, config.batch_size, num_workers=1)
@@ -95,8 +99,12 @@ def train(config):
         batch_inputs = batch_inputs.to(device)
         batch_targets = batch_targets.to(device)
         # note that model_output are raw output before softmaxing
-        hidden_weight, hidden_state, model_output = model.forward(batch_inputs)
-        loss = criterion(model_output, batch_targets)
+        # adding an extra input size dimension this is needed for pytorch implementation
+        batch_inputs = batch_inputs.unsqueeze(2)
+        model_output, hidden = model.forward(batch_inputs)
+        # note: as we only care about the last output, aka the last digit in the pandidrome!
+        last_step_output = model_output.view(config.batch_size, config.input_length, -1)[:, -1, :]
+        loss = criterion(last_step_output, batch_targets)
         loss.backward()
 
         ############################################################################
@@ -107,7 +115,7 @@ def train(config):
         # Add more code here ...
         optimizer.step()
         loss = loss.item()
-        accuracy = calc_accuracy(model_output, batch_targets)
+        accuracy = calc_accuracy(last_step_output, batch_targets)
 
         # Just for time measurement
         t2 = time.time()
