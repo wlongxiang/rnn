@@ -3,15 +3,28 @@ from torch import nn
 
 
 class RNN(nn.Module):
-    def __init__(self, input_size, output_size, hidden_size, num_layers, bidirectional=False):
+    def __init__(self, input_size, output_size, hidden_size, num_layers, bidirectional=False, lstm=False, gru=False):
         super(RNN, self).__init__()
         self.num_layers = num_layers
         self.hidden_size = hidden_size
         self.bidirectional = bidirectional
-        self.rnn = nn.RNN(input_size=input_size,
-                          hidden_size=hidden_size,
-                          num_layers=num_layers,
-                          batch_first=True)
+        self.lstm = lstm
+        self.gru = gru
+        if self.lstm:
+            self.rnn = nn.LSTM(input_size=input_size,
+                               hidden_size=hidden_size,
+                               num_layers=num_layers,
+                               batch_first=True)
+        elif self.gru:
+            self.rnn = nn.GRU(input_size=input_size,
+                              hidden_size=hidden_size,
+                              num_layers=num_layers,
+                              batch_first=True)
+        else:
+            self.rnn = nn.RNN(input_size=input_size,
+                              hidden_size=hidden_size,
+                              num_layers=num_layers,
+                              batch_first=True)
         # Fully connected layer
         self.fc = nn.Linear(hidden_size, output_size)
 
@@ -38,4 +51,11 @@ class RNN(nn.Module):
         h_zero = torch.zeros(num_directions * self.num_layers,
                              batch_size,
                              self.hidden_size)
-        return h_zero
+        # if it is LSTM, we also need to include the cell states
+        if self.lstm:
+            return h_zero, h_zero
+        else:
+            h_zero = torch.zeros(num_directions * self.num_layers,
+                                 batch_size,
+                                 self.hidden_size)
+            return h_zero

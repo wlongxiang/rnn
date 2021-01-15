@@ -96,7 +96,14 @@ def train(config):
     data_loader = DataLoader(dataset, config.batch_size, num_workers=1)
     # Initialize the device which to run the model on
     device = torch.device(config.device)
-    model = RNN(input_size=dataset.dict_size, output_size=dataset.dict_size, hidden_size=12, num_layers=1).to(device)
+    if config.model_type == "LSTM":
+        model = RNN(input_size=dataset.dict_size, output_size=dataset.dict_size, hidden_size=12, num_layers=1,
+                    lstm=True)
+    elif config.model_type == "GRU":
+        model = RNN(input_size=dataset.dict_size, output_size=dataset.dict_size, hidden_size=12, num_layers=1,
+                    gru=True)
+    else:
+        model = RNN(input_size=dataset.dict_size, output_size=dataset.dict_size, hidden_size=12, num_layers=1)
 
     # Setup the loss and optimizer
     criterion = nn.CrossEntropyLoss()
@@ -180,7 +187,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     # Model params
-    parser.add_argument('--model_type', type=str, default="RNN", help="Model type, should be 'RNN' or 'LSTM'")
+    parser.add_argument('--model_type', type=str, default="GRU", help="Model type, should be 'RNN' or 'LSTM' or 'GRU'")
     parser.add_argument('--input_length', type=int, default=6, help='Length of an input sequence')
     parser.add_argument('--input_dim', type=int, default=1, help='Dimensionality of input sequence')
     parser.add_argument('--num_classes', type=int, default=10, help='Dimensionality of output sequence')
