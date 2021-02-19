@@ -18,3 +18,6 @@ A really good intro into PyTorch RNN is found:
 [LSTM blog post](https://blog.floydhub.com/long-short-term-memory-from-zero-to-hero-with-pytorch/)
 
 [Transformer blog post](https://blog.floydhub.com/the-transformer-in-pytorch/)
+
+A visual representation for PyTorch API:
+https://stackoverflow.com/questions/48302810/whats-the-difference-between-hidden-and-output-in-pytorch-lstm
